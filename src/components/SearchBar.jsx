@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Input, Btn } from "./index";
 import api from "../api/api";
-import { useDispatch, useSelector } from "react-redux";
-import { addWheather } from "../redux/slices/wheatherSlice";
+import { useDispatch } from "react-redux";
+import { addWeather, addForecast } from "../redux/slices/weatherSlice";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { FiSearch } from "react-icons/fi";
 
 const WeatherSearchBar = () => {
   const [city, setCity] = useState("");
@@ -10,27 +12,31 @@ const WeatherSearchBar = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef();
   const dispatch = useDispatch();
-  const weather = useSelector((state) => state.weather);
-
-  // Debounce timer
+  const [error, setError] = useState("");
+  const [btnDisabled, setBtnDisabled] = useState(true);
   const [debounceTimer, setDebounceTimer] = useState(null);
 
-  // Function to handle the input change and debounce the API call
+  useEffect(() => {
+    setBtnDisabled(!(city.length >= 3));
+  }, [city]);
+
   const handleInputChange = (e) => {
     setCity(e.target.value);
 
     if (e.target.value.length >= 3) {
-      // Clear the previous debounce timer
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
 
-      // Set a new debounce timer
       setDebounceTimer(
         setTimeout(async () => {
-          const cities = await api.searchCities({state:e.target.value,limit:5})
-          setSuggestions(cities);
-          setShowSuggestions(true);
+          try {
+            const cities = await api.searchCities({ state: e.target.value, limit: 5 });
+            setSuggestions(cities);
+            setShowSuggestions(true);
+          } catch (err) {
+            toast.error("Error fetching city suggestions!");
+          }
         }, 2000)
       );
     } else {
@@ -39,80 +45,81 @@ const WeatherSearchBar = () => {
     }
   };
 
-  // Function to fetch city suggestions from the API
-  // const fetchCitySuggestions = async (query) => {
-  //   try {
-  //     const response = await fetch(
-  //       `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=52fc768d200d9f2960c9c299128cff1e`
-  //     );
-  //     const data = await response.json();
-  //     setSuggestions(data);
-  //     setShowSuggestions(true);
-  //   } catch (error) {
-  //     console.error("Error fetching city suggestions:", error);
-  //   }
-  // };
-
-  // Function to handle selecting a suggestion
- 
- 
   const handleSuggestionClick = async (suggestion) => {
     const { lat, lon } = suggestion;
     try {
-      const weatherData = await api.searchWheatherByCoordinates({lat,lon})
-      dispatch(addWheather(weatherData));
-      setCity(suggestion.name); // Set the city name to the selected suggestion
+      const weatherData = await api.searchWeatherByCoordinates({ lat, lon });
+      dispatch(addWeather(weatherData));
+      if (weatherData) {
+        const forecastData = await api.FiveDaysThreeHourForecast({ lat, lon });
+        dispatch(addForecast(forecastData));
+      }
+      toast.success("Weather data fetched successfully!");
+      setCity(suggestion.name);
       setShowSuggestions(false);
     } catch (error) {
-      console.error("Error fetching weather data by lat/lon:", error);
+      toast.error("Error fetching weather data!");
     }
   };
 
-  // Function to handle search button click
-  const handleSearch = async () => {
+  const handleSearch = async (city) => {
     try {
-      const cityWeather = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=52fc768d200d9f2960c9c299128cff1e`
-      );
-      const weatherData = await cityWeather.json();
-      dispatch(addWheather(weatherData));
-      console.log("City:", city, "Weather:", weather);
+      const weatherData = await api.searchWeatherByCity({ city: city });
+      dispatch(addWeather(weatherData));
+      if (weatherData) {
+        const forecastData = await api.FiveDaysThreeHourForecast({ lat: weatherData.coord.lat, lon: weatherData.coord.lon });
+        dispatch(addForecast(forecastData));
+      }
+      toast.success("Weather data fetched successfully!");
+      setSuggestions([]);
+      setShowSuggestions(false);
     } catch (error) {
-      console.error("Error fetching weather data by city name:", error);
+      toast.error("Error fetching weather data by city name!");
     }
   };
 
   return (
     <div className="flex items-center justify-center mt-5">
-      <div className="relative flex space-x-3 bg-white p-4 rounded-lg shadow-md w-full max-w-md">
-        <Input
+      <div className="relative flex space-x-3 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-2xl">
+        <input
           ref={inputRef}
           type="text"
           value={city}
           onChange={handleInputChange}
           placeholder="Enter city name..."
-          className="flex-grow"
+          className="flex-grow bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 px-4 py-2"
         />
-        <Btn onClick={handleSearch} bg="bg-blue-500" text="text-white">
+        <button
+          onClick={() => handleSearch(city)}
+          disabled={btnDisabled}
+          className={`flex items-center justify-center px-4 py-2 rounded-md shadow-md focus:outline-none transition duration-200 ${
+            btnDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+          } text-white`}
+        >
+          <FiSearch className="mr-2" />
           Search
-        </Btn>
+        </button>
 
-        {/* Suggestions Dropdown */}
         {showSuggestions && suggestions?.length > 0 && (
-          <ul className="absolute top-full left-0 right-0 mt-1 bg-white shadow-md rounded-lg max-h-48 overflow-y-auto z-10">
+          <ul className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 shadow-md rounded-lg max-h-48 overflow-y-auto z-10">
             {suggestions.map((suggestion, index) => (
               <li
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="cursor-pointer p-2 hover:bg-gray-100"
+                className="cursor-pointer p-2 flex items-center hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-200"
               >
-                {suggestion.name}, {suggestion.state}, {suggestion.country} 
-                {/* <img src={`https://flagsapi.com/${suggestion.country}/flat/64.png`} alt="flag" /> */}
+                <img
+                  src={`https://flagsapi.com/${suggestion.country}/flat/64.png`}
+                  alt={`${suggestion.country} flag`}
+                  className="w-6 h-4 mr-2 rounded-sm"
+                />
+                <span>{suggestion.name}, {suggestion.state}, {suggestion.country}</span>
               </li>
             ))}
           </ul>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

@@ -54,8 +54,8 @@ Make sure you have Node.js and npm installed on your machine.
 
 4. Create a `.env` file in the root directory and add your OpenWeatherMap API key:
     ```plaintext
-    VITE_WHEATHER_API_KEY=your_api_key
-    VITE_WHEATHER_API_URI=https://api.openweathermap.org/data/2.5/weather
+    VITE_WEATHER_API_KEY=your_api_key
+    VITE_WEATHER_API_URI=https://api.openweathermap.org/data/2.5/weather
     ```
 
 5. Start the development server:

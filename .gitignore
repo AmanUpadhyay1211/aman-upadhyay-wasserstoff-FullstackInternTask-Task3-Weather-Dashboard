@@ -1,3 +1,5 @@
+#environmental variable
+.env
 # Logs
 logs
 *.log
@@ -8,8 +10,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-.env
-.vscode
 dist
 dist-ssr
 *.local
