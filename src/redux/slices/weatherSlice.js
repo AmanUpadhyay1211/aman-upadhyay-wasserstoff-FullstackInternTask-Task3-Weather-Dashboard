@@ -19,6 +19,6 @@ const initialState = {
      }
 })
 
-  export const {addWeather,addForecast} = weatherSlice.actions;
+  export const {addWeather,addForecast,addUnit} = weatherSlice.actions;
   
 export default weatherSlice.reducer;

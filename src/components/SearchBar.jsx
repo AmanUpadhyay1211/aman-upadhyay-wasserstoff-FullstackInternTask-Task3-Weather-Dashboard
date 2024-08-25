@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { addWeather, addForecast } from "../redux/slices/weatherSlice";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiMapPin } from "react-icons/fi";
 
 const WeatherSearchBar = () => {
   const [city, setCity] = useState("");
@@ -19,6 +19,15 @@ const WeatherSearchBar = () => {
   useEffect(() => {
     setBtnDisabled(!(city.length >= 3));
   }, [city]);
+
+  useEffect(() => {
+    // Check if user location is already stored in localStorage
+    const storedLocation = localStorage.getItem("userLocation");
+    if (storedLocation) {
+      const locationData = JSON.parse(storedLocation);
+      fetchWeatherByCoordinates(locationData.lat, locationData.lon);
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     setCity(e.target.value);
@@ -45,8 +54,20 @@ const WeatherSearchBar = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && city.length >= 3) {
+      handleSearch(city);
+    }
+  };
+
   const handleSuggestionClick = async (suggestion) => {
     const { lat, lon } = suggestion;
+    fetchWeatherByCoordinates(lat, lon);
+    setCity(suggestion.name);
+    setShowSuggestions(false);
+  };
+
+  const fetchWeatherByCoordinates = async (lat, lon) => {
     try {
       const weatherData = await api.searchWeatherByCoordinates({ lat, lon });
       dispatch(addWeather(weatherData));
@@ -55,8 +76,6 @@ const WeatherSearchBar = () => {
         dispatch(addForecast(forecastData));
       }
       toast.success("Weather data fetched successfully!");
-      setCity(suggestion.name);
-      setShowSuggestions(false);
     } catch (error) {
       toast.error("Error fetching weather data!");
     }
@@ -67,25 +86,52 @@ const WeatherSearchBar = () => {
       const weatherData = await api.searchWeatherByCity({ city: city });
       dispatch(addWeather(weatherData));
       if (weatherData) {
-        const forecastData = await api.FiveDaysThreeHourForecast({ lat: weatherData.coord.lat, lon: weatherData.coord.lon });
+        const forecastData = await api.FiveDaysThreeHourForecast({
+          lat: weatherData.coord.lat,
+          lon: weatherData.coord.lon,
+        });
         dispatch(addForecast(forecastData));
       }
       toast.success("Weather data fetched successfully!");
-      setSuggestions([]);
       setShowSuggestions(false);
     } catch (error) {
       toast.error("Error fetching weather data by city name!");
     }
   };
 
+  const handleLocationClick = async () => {
+    const storedLocation = localStorage.getItem("userLocation");
+    if (storedLocation) {
+      const locationData = JSON.parse(storedLocation);
+      fetchWeatherByCoordinates(locationData.lat, locationData.lon);
+    }else{
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            // Save user location to localStorage
+            localStorage.setItem("userLocation", JSON.stringify({ lat: latitude, lon: longitude }));
+            fetchWeatherByCoordinates(latitude, longitude);
+          },
+          (error) => {
+            toast.error("Error fetching location. Please enable location services.");
+          }
+        );
+      } else {
+        toast.error("Geolocation is not supported by your browser.");
+      }
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center mt-5">
-      <div className="relative flex space-x-3 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-2xl">
+    <div className="flex items-center justify-center w-full bg-white dark:bg-slate-900 p-2">
+      <div className="relative flex space-x-3 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md w-full max-w-2xl">
         <input
           ref={inputRef}
           type="text"
           value={city}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
           placeholder="Enter city name..."
           className="flex-grow bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 px-4 py-2"
         />
@@ -98,6 +144,13 @@ const WeatherSearchBar = () => {
         >
           <FiSearch className="mr-2" />
           Search
+        </button>
+        <button
+          onClick={handleLocationClick}
+          className="flex items-center justify-center px-4 py-2 rounded-md shadow-md focus:outline-none transition duration-200 bg-green-500 hover:bg-green-600 text-white"
+        >
+          <FiMapPin className="mr-2" />
+          Use Location
         </button>
 
         {showSuggestions && suggestions?.length > 0 && (

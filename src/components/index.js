@@ -1,15 +1,23 @@
-// Import all components
-import Btn from "./Btn";
-import Input from "./Input";
 import SearchBar from "./SearchBar";
 import WeatherDetails from "./WeatherDetails";
 import ThemeToggler from "./ThemeToggler";
+import Logo from "./Logo";
+import VerticalNavbar from "./VerticalNavbar";
+import MapComponent from "./MapComponent";
+import About from "./About";
+import Contact from "./Contact";
+import NotFound from "./NotFound";
+import PinnedCity from "./PinnedCity"
 
-// Export components for usage in other parts of the app
 export {
-  Btn,
-  Input,
   SearchBar,
   WeatherDetails,
-  ThemeToggler
+  ThemeToggler,
+  Logo,
+  VerticalNavbar,
+  MapComponent,
+  About,
+  Contact,
+  NotFound,
+  PinnedCity
 };
