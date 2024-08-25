@@ -21,7 +21,6 @@ const WeatherSearchBar = () => {
   }, [city]);
 
   useEffect(() => {
-    // Check if user location is already stored in localStorage
     const storedLocation = localStorage.getItem("userLocation");
     if (storedLocation) {
       const locationData = JSON.parse(storedLocation);
@@ -46,7 +45,7 @@ const WeatherSearchBar = () => {
           } catch (err) {
             toast.error("Error fetching city suggestions!");
           }
-        }, 2000)
+        }, 1000)  // Debounce time set to 1000ms (1 second)
       );
     } else {
       setSuggestions([]);
@@ -104,12 +103,11 @@ const WeatherSearchBar = () => {
     if (storedLocation) {
       const locationData = JSON.parse(storedLocation);
       fetchWeatherByCoordinates(locationData.lat, locationData.lon);
-    }else{
+    } else {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             const { latitude, longitude } = position.coords;
-            // Save user location to localStorage
             localStorage.setItem("userLocation", JSON.stringify({ lat: latitude, lon: longitude }));
             fetchWeatherByCoordinates(latitude, longitude);
           },
@@ -124,8 +122,8 @@ const WeatherSearchBar = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full bg-white dark:bg-slate-900 p-2">
-      <div className="relative flex space-x-3 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md w-full max-w-2xl">
+    <div className="flex flex-col md:flex-row items-center justify-center w-full bg-white dark:bg-slate-900 p-4 md:p-2">
+      <div className="relative flex flex-col md:flex-row md:space-x-3 bg-white dark:bg-gray-800 p-4 md:p-2 rounded-lg shadow-md w-full max-w-2xl">
         <input
           ref={inputRef}
           type="text"
@@ -134,20 +132,23 @@ const WeatherSearchBar = () => {
           onKeyDown={handleKeyDown}
           placeholder="Enter city name..."
           className="flex-grow bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 px-4 py-2"
+          aria-label="City name input"
         />
         <button
           onClick={() => handleSearch(city)}
           disabled={btnDisabled}
-          className={`flex items-center justify-center px-4 py-2 rounded-md shadow-md focus:outline-none transition duration-200 ${
+          className={`flex items-center justify-center px-4 py-2 mt-3 md:mt-0 rounded-md shadow-md focus:outline-none transition duration-200 ${
             btnDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
           } text-white`}
+          aria-label="Search button"
         >
           <FiSearch className="mr-2" />
           Search
         </button>
         <button
           onClick={handleLocationClick}
-          className="flex items-center justify-center px-4 py-2 rounded-md shadow-md focus:outline-none transition duration-200 bg-green-500 hover:bg-green-600 text-white"
+          className="flex items-center justify-center px-4 py-2 mt-3 md:mt-0 rounded-md shadow-md focus:outline-none transition duration-200 bg-green-500 hover:bg-green-600 text-white"
+          aria-label="Use location button"
         >
           <FiMapPin className="mr-2" />
           Use Location

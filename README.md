@@ -1,16 +1,21 @@
 # Weather Forecast Application 🌦️
 
-A modern, responsive single-page application for weather forecasts. Built using React, this application allows users to search for weather information by city, receive auto-suggestions with city names, and view detailed weather forecasts based on their location. The app offers a sleek user interface and seamless functionality using various APIs.
+
+
+A modern, responsive single-page application for weather forecasts. Built using React, this application allows users to search for weather information by city, receive auto-suggestions with city names, and view detailed weather forecasts based on their location. The app offers a sleek user interface and seamless functionality using various APIs and advanced state management techniques.
+
+![Weather App](https://res.cloudinary.com/amanupadhyay1211/image/upload/v1724590578/fhjoi4w3tjxl4eg115vw.png)
 
 ## Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [APIs Used](#apis-used)
-- [Approach](#approach)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Features](#features-✨)
+- [Tech Stack](#tech-stack-🛠️)
+- [Getting Started](#getting-started-🚀)
+- [APIs Used](#apis-used-🌐)
+- [Approach](#approach-🧠)
+- [Usage](#usage-📖)
+- [Enhancements](#enhancements-📈)
+- [Contributing](#contributing-🤝)
+- [License](#license-📄)
 
 ## Features ✨
 - **City Weather Search**: Enter a city name to get the current weather details.
@@ -19,6 +24,9 @@ A modern, responsive single-page application for weather forecasts. Built using 
 - **Weather by Coordinates**: Click on a suggestion to get weather details by latitude and longitude for precise information.
 - **Responsive Design**: Fully responsive and user-friendly interface.
 - **Toggle Temperature Unit**: Easily switch between Celsius and Fahrenheit.
+- **Pinned Cities**: Save your favorite cities and access their weather data quickly.
+- **Dark and Light Mode**: Toggle between dark and light themes for better usability.
+- **Error Handling**: Graceful error handling with user-friendly messages.
 
 ## Tech Stack 🛠️
 - **Frontend**: React, JavaScript, HTML, CSS, Tailwind CSS
@@ -26,6 +34,7 @@ A modern, responsive single-page application for weather forecasts. Built using 
 - **HTTP Client**: Axios
 - **Icons**: React Icons
 - **Backend**: OpenWeatherMap API (public API)
+- **Utilities**: Debounce for input optimization
 
 ## Getting Started 🚀
 
@@ -39,12 +48,12 @@ Make sure you have Node.js and npm installed on your machine.
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/weather-forecast-app.git
+    git clone https://https://github.com/AmanUpadhyay1211/aman-upadhyay-wasserstoff-FullstackInternTask-Task3-Weather-Dashboard
     ```
    
 2. Navigate to the project directory:
     ```bash
-    cd weather-forecast-app
+    cd WheatherApp
     ```
 
 3. Install dependencies:
@@ -52,13 +61,7 @@ Make sure you have Node.js and npm installed on your machine.
     npm install
     ```
 
-4. Create a `.env` file in the root directory and add your OpenWeatherMap API key:
-    ```plaintext
-    VITE_WEATHER_API_KEY=your_api_key
-    VITE_WEATHER_API_URI=https://api.openweathermap.org/data/2.5/weather
-    ```
-
-5. Start the development server:
+4. Start the development server:
     ```bash
     npm start
     ```
@@ -87,15 +90,22 @@ Make sure you have Node.js and npm installed on your machine.
 - If the user clicks the "Search" button without selecting a suggestion, the app fetches weather data by city name.
 
 ### 4. **Displaying Weather Data**
-- The app displays current weather conditions, hourly forecasts, and an 5-day forecast.
+- The app displays current weather conditions, hourly forecasts, and a 5-day forecast.
 - Users can toggle between Celsius and Fahrenheit for temperature display.
 
 ## Usage 📖
 
 - Enter a city name in the search bar.
 - Choose a city from the dropdown or click the "Search" button.
-- View current weather, hourly, and 8-day forecasts.
+- View current weather, hourly, and 5-day forecasts.
 - Switch between Celsius and Fahrenheit as needed.
+- Pin cities to quickly view their weather information.
+
+## Enhancements 📈
+- **Offline Support**: Cache weather data for offline access.
+- **Detailed Weather Information**: Show more details like humidity, pressure, and visibility.
+- **Map Integration**: Integrate a map view to show the city's location.
+- **User Accounts**: Allow users to create accounts to save their preferences and pinned cities across devices.
 
 ## Contributing 🤝
 
@@ -110,3 +120,7 @@ Contributions are what make the open-source community such an amazing place to l
 ## License 📄
 
 Distributed under the Upadhyay License. See `LICENSE` for more information.
+
+---
+
+Feel free to add more images or adjust the layout as you see fit!
