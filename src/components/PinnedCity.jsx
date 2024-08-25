@@ -37,7 +37,7 @@ function PinnedCity() {
     };
 
     fetchPinnedCitiesWeather();
-  }, [dispatch, pinnedCitiesWeather]);
+  }, []);
 
   const removeCity = (cityName) => {
     let pinnedCities = JSON.parse(localStorage.getItem("PinnedCity")) || [];
