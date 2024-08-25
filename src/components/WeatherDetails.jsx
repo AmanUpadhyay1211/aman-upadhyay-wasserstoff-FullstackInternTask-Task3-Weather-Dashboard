@@ -50,7 +50,7 @@ const WeatherDetails = () => {
 
   if (!weatherData || !forecastData) {
     return (
-      <div className="text-center py-20flex items-center justify-center h-[88.7vh] bg-white dark:bg-gray-900">
+      <div className="flex items-center justify-center h-[88.7vh] bg-white dark:bg-gray-900">
         <p className="text-center text-2xl font-semibold text-gray-800 dark:text-white">
           {weatherData ? "Loading..." : "Welcome! Please search for a city to see the weather details."}
         </p>
